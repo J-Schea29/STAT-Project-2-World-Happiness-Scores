@@ -20,6 +20,16 @@ library(reshape)
 ```{r}
 data <- read.csv("Resources/World Happiness Report 2022.csv")
 data
+
+hs = data$Happiness.score
+dys_r = data$Dystopia..1.83....residual
+gdp = data$Explained.by..GDP.per.capita
+soc = data$Explained.by..Social.support
+hle = data$Explained.by..Healthy.life.expectancy
+free = data$Explained.by..Freedom.to.make.life.choices
+gene = data$Explained.by..Generosity
+poc = data$Explained.by..Perceptions.of.corruption
+
 ```
 ```{r}
 df <- subset(data, select = -c(RANK, Country))
@@ -49,7 +59,7 @@ library(plotly)
 ```
 
 ```{r}
-model <- lm(mpg ~ disp + hp + wt + drat, data = mtcars)
+model <- lm(hs ~  + hp + wt + drat, data = mtcars)
 summary(model)
 ```
 
