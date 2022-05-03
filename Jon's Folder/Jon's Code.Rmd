@@ -41,6 +41,13 @@ ggplot(data = melted_format, aes(x=X1, y=X2, fill=value )) +
   geom_tile() + geom_text(aes(label = value), color = 'white')
 ggsave('Correlation_heatmap.png', width = 5, height = 5)
 ```
+```{r}
+install.packages("plotly")
+```
+```{r}
+library(plotly)
+
+```
 
 ```{r}
 model <- lm(mpg ~ disp + hp + wt + drat, data = mtcars)
