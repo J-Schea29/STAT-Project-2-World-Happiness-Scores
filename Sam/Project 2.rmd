@@ -22,7 +22,6 @@ data <- read.csv("Resources/World Happiness Report 2022.csv")
 data
 
 hs = data$Happiness.score
-dys_r = data$Dystopia..1.83....residual
 gdp = data$Explained.by..GDP.per.capita
 soc = data$Explained.by..Social.support
 hle = data$Explained.by..Healthy.life.expectancy
@@ -59,8 +58,9 @@ library(plotly)
 ```
 
 ```{r}
-model <- lm(hs ~  + hp + wt + drat, data = mtcars)
+model <- lm(hs ~ gdp + soc + hle + free + gene + poc)
 summary(model)
+
 ```
 
 ```{r}
