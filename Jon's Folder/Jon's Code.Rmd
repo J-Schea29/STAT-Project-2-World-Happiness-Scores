@@ -1,18 +1,16 @@
 ---
-title: "Stat Project 2"
 output: html_notebook
 ---
 
-This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+<br>
+<b><center><h1> Statistics Project II </h1></center></b>
+<center><h3>by Sam Sharp, Alvin Ugochukwu, and Jon Scheaffer</h3></center>
+<br>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;World Happiness Score is obtained by statistically calculating many different variables which describe aspects of society in a given country. These variables are GDP, social support, health/life expectancy, freedom, genoerosity, and perceptions of corruption. The dataset used is from the World Gallup Poll. Importantly, none of the predictor variables appear to be colinear, which strengthens the argument for the use of multiple linear regression. The dataset consists of entries for 146 countries, using 6 predictors that each linearly correlate with the World Happiness Score.</p>
+<br>
 
-Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Ctrl+Shift+Enter*. 
-```{r}
-#install.packages("MASS") 
-#install.packages("reshape2") 
-#install.packages("reshape")
-#install.packages("plotly")
-```
-```{r}
+
+```{r, echo=FALSE}
 library(MASS) 
 library(reshape2) 
 library(reshape)
@@ -20,11 +18,11 @@ library(plotly)
 library(car)
 ```
 
-```{r}
+```{r, echo=FALSE}
 data <- read.csv("Resources/World Happiness Report 2022.csv")
 data
 ```
-```{r}
+```{r, echo=FALSE}
 hs = data$Happiness.score
 dys_r = data$Dystopia..1.83....residual
 gdp = data$Explained.by..GDP.per.capita
@@ -33,65 +31,57 @@ hle = data$Explained.by..Healthy.life.expectancy
 free = data$Explained.by..Freedom.to.make.life.choices
 gene = data$Explained.by..Generosity
 poc = data$Explained.by..Perceptions.of.corruption
-df <- data.frame(hs, dys_r, gdp, hle, free, gene, poc)
+df <- data.frame(hs, dys_r, soc, gdp, hle, free, gene, poc)
 ```
 
-```{r}
+```{r, echo=FALSE}
 summary(df)
 ```
 
-```{r}
+```{r, echo=FALSE}
 str(df)
 ```
 
-
 ```{r}
+plot(hs, dys_r, pch = 19, col = "black")
+plot(hs, soc, pch = 19, col = "black")
+plot(hs, gdp, pch = 19, col = "black")
+plot(hs, hle, pch = 19, col = "black")
+plot(hs, free, pch = 19, col = "black")
+plot(hs, gene, pch = 19, col = "black")
+plot(hs, poc, pch = 19, col = "black")
+```
+
+
+```{r, echo=FALSE}
 model <- lm(hs ~ dys_r + gdp + hle + free + gene+poc)
 summary(model)
 ```
 
-```{r}
-cormat <- round(cor(dflist),2)
+```{r, echo=FALSE}
+cormat <- round(cor(df),2)
 melted_format <- melt(cormat)
-head(melted_format)
 ```
 
-```{r}
+```{r, echo=FALSE}
 ggplot(data = melted_format, aes(x=X1, y=X2, fill=value )) + 
   geom_tile() + geom_text(aes(label = value), color = 'white')
 ggsave('Correlation_heatmap.png', width = 5, height = 5)
 ```
 
-```{r}
-cormat <- round(cor(df2[ , c('Happiness.score', 'Dystopia..1.83....residual', 'Explained.by..GDP.per.capita', 'Explained.by..Social.support', 'Explained.by..Healthy.life.expectancy', 'Explained.by..Freedom.to.make.life.choices', 'Explained.by..Generosity', 'Explained.by..Perceptions.of.corruption')]),2)
-melted_format2 <- melt(cormat)
-head(melted_format)
-```
 
-```{r}
-ggplot(data = melted_format2, aes(x=X1, y=X2, fill=value )) + 
-  geom_tile() + geom_text(aes(label = value), color = 'white')
-ggsave('Correlation_heatmap.png', width = 5, height = 5)
-```
-
-```{r}
-model <- lm(hs ~ dys_r + gdp + hle + free + gene+poc)
+```{r, echo=FALSE}
+model <- lm(hs ~ gdp + hle + free + gene+poc)
 summary(model)
 ```
 
-```{r}
+```{r, echo=FALSE}
 vif(model)
 ```
 
-```{r}
-#create vector of VIF values
+```{r, echo=FALSE}
 vif_values <- vif(model)
-
-#create horizontal bar chart to display each VIF value
 barplot(vif_values, main = "VIF Values", horiz = TRUE, col = "steelblue")
-
-#add vertical line at 5
-abline(v = 5, lwd = 3, lty = 2)
 ```
 ```
 ```{r}
