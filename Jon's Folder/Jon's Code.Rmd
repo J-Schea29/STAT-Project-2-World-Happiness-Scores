@@ -7,14 +7,17 @@ This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute
 
 Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Ctrl+Shift+Enter*. 
 ```{r}
-install.packages("MASS") 
-install.packages("reshape2") 
-install.packages("reshape")
+#install.packages("MASS") 
+#install.packages("reshape2") 
+#install.packages("reshape")
+#install.packages("plotly")
 ```
 ```{r}
 library(MASS) 
 library(reshape2) 
 library(reshape)
+library(plotly)
+library(car)
 ```
 
 ```{r}
@@ -22,40 +25,77 @@ data <- read.csv("Resources/World Happiness Report 2022.csv")
 data
 ```
 ```{r}
-df <- subset(data, select = -c(RANK, Country))
+hs = data$Happiness.score
+dys_r = data$Dystopia..1.83....residual
+gdp = data$Explained.by..GDP.per.capita
+soc = data$Explained.by..Social.support
+hle = data$Explained.by..Healthy.life.expectancy
+free = data$Explained.by..Freedom.to.make.life.choices
+gene = data$Explained.by..Generosity
+poc = data$Explained.by..Perceptions.of.corruption
+df <- data.frame(hs, dys_r, gdp, hle, free, gene, poc)
 ```
 
 ```{r}
 summary(df)
 ```
+
 ```{r}
 str(df)
 ```
+
+
 ```{r}
-cormat <- round(cor(df[ , c('Happiness.score', 'Whisker.high', 'Whisker.low', 'Dystopia..1.83....residual', 'Explained.by..GDP.per.capita', 'Explained.by..Social.support', 'Explained.by..Healthy.life.expectancy', 'Explained.by..Freedom.to.make.life.choices', 'Explained.by..Generosity', 'Explained.by..Perceptions.of.corruption')]),2)
+model <- lm(hs ~ dys_r + gdp + hle + free + gene+poc)
+summary(model)
+```
+
+```{r}
+cormat <- round(cor(dflist),2)
 melted_format <- melt(cormat)
 head(melted_format)
 ```
+
 ```{r}
 ggplot(data = melted_format, aes(x=X1, y=X2, fill=value )) + 
   geom_tile() + geom_text(aes(label = value), color = 'white')
 ggsave('Correlation_heatmap.png', width = 5, height = 5)
 ```
-```{r}
-install.packages("plotly")
-```
-```{r}
-library(plotly)
-
-```
 
 ```{r}
-model <- lm(mpg ~ disp + hp + wt + drat, data = mtcars)
+cormat <- round(cor(df2[ , c('Happiness.score', 'Dystopia..1.83....residual', 'Explained.by..GDP.per.capita', 'Explained.by..Social.support', 'Explained.by..Healthy.life.expectancy', 'Explained.by..Freedom.to.make.life.choices', 'Explained.by..Generosity', 'Explained.by..Perceptions.of.corruption')]),2)
+melted_format2 <- melt(cormat)
+head(melted_format)
+```
+
+```{r}
+ggplot(data = melted_format2, aes(x=X1, y=X2, fill=value )) + 
+  geom_tile() + geom_text(aes(label = value), color = 'white')
+ggsave('Correlation_heatmap.png', width = 5, height = 5)
+```
+
+```{r}
+model <- lm(hs ~ dys_r + gdp + hle + free + gene+poc)
 summary(model)
 ```
 
 ```{r}
-summary(data)
+vif(model)
+```
+
+```{r}
+#create vector of VIF values
+vif_values <- vif(model)
+
+#create horizontal bar chart to display each VIF value
+barplot(vif_values, main = "VIF Values", horiz = TRUE, col = "steelblue")
+
+#add vertical line at 5
+abline(v = 5, lwd = 3, lty = 2)
+```
+```
+```{r}
+
 ```
 
 Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Ctrl+Alt+I*.
