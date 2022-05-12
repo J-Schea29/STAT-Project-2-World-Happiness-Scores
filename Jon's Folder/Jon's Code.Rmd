@@ -10,7 +10,7 @@ output: html_notebook
 <br>
 
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, results='hide'}
 library(MASS) 
 library(reshape2) 
 library(reshape)
@@ -20,9 +20,9 @@ library(car)
 
 ```{r, echo=FALSE}
 data <- read.csv("Resources/World Happiness Report 2022.csv")
-head(data)
+data
 ```
-<p>Above:The first six rows of a table displaying the data in the World Happienes report.</p>
+<p>Above:The table displaying the data in the World Happiness report.</p>
 ------------------------------------------------------
 <br>
 
@@ -47,7 +47,8 @@ str(df)
 ```
 <center><h2> Scatter Plots between the Different Variables </h2></center>
 <br>
-```{r, echo=FALSE}
+<div align="center">
+```{r, echo=FALSE, fig.align = 'center'}
 par(mfrow = c(1,3))
 plot(hs, soc, pch = 19, col = "black")
 plot(hs, gdp, pch = 19, col = "black")
@@ -56,8 +57,10 @@ plot(hs, free, pch = 19, col = "black")
 plot(hs, gene, pch = 19, col = "black")
 plot(hs, poc, pch = 19, col = "black")
 ```
-
-
+</div>
+```{r, echo=FALSE, results='hide'}
+plot(hs, dys_r, pch = 19, col = "black")
+```
 
 ```{r, echo=FALSE}
 model <- lm(hs ~ dys_r + gdp + hle + free + gene+poc)
