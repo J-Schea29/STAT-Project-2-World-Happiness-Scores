@@ -6,7 +6,7 @@ output: html_notebook
 <b><center><h1> Statistics Project II </h1></center></b>
 <center><h3>by Sam Sharp, Alvin Ugochukwu, and Jon Scheaffer</h3></center>
 <br>
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;World Happiness Score is obtained by statistically calculating many different variables which describe aspects of society in a given country. These variables are GDP, social support, health/life expectancy, freedom, generosity, and perceptions of corruption. The dataset used is from Kaggle (https://www.kaggle.com/datasets/ajaypalsinghlo/world-happiness-report-2022) and uses data from the World Gallup Poll. Importantly, none of the predictor variables appear to be colinear, which strengthens the argument for the use of multiple linear regression. The dataset consists of entries for 146 countries, using 6 predictors that each linearly correlate with the World Happiness Score.</p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;World Happiness Score is obtained by statistically calculating many different variables which describe aspects of society in a given country. These variables are GDP, social support, health/life expectancy, freedom, generosity, and perceptions of corruption. The dataset used is from Kaggle (https://www.kaggle.com/datasets/ajaypalsinghlo/world-happiness-report-2022) and uses data from the World Gallup Poll. Importantly, none of the predictor variables appear to be collinear, which strengthens the argument for the use of multiple linear regression. The dataset consists of entries for 146 countries, using 6 predictors that each linearly correlate with the World Happiness Score.</p>
 <br>
 
 
@@ -41,7 +41,14 @@ rank = data$RANK
 
 ```{r, echo=FALSE}
 df <- data.frame(hs, soc, gdp, hle, free, gene, poc)
+Variable <- c("hs", "soc", "gdp", "hle", "free", "gene", "poc")
+Description <- c("Happiness score, the predicted result from independent variables", "The level of social programs and support available", "The GDP of the country in question", "The healthy life expectancy of a person in the country", "The ability of a person in the country to do what they wish", "The level of generosity someone experiences in the country", "The level of perceived corruption within institutions of power")
+table <- data.frame(Variable, Description)
+table
 ```
+<p>Above:A table displaying the varaibles and there meanings.</p>
+------------------------------------------------------
+<br>
 
 ```{r, echo=FALSE, results='hide'}
 summary(df)
@@ -73,6 +80,10 @@ summary(model)
 ```
 <br>
 <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;From the Estimate Std column we can derive the formula:</p>
+```{r}
+model2 <- lm(hs ~ gdp + soc + hle + free)
+summary(model2)
+```
 
 <center><p style="font-size:25px"><b>hs = 1.67 + (0.55)X<sub>1</sub> + (1.41)X<sub>2</sub> + (1.27)X<sub>3</sub> + (1.60)<sub>4</sub> + (0.97)<sub>5</sub> + (0.73)X<sub>6</sub></b></p></center>
 <br>
@@ -92,7 +103,7 @@ ggplot(data = melted_format, aes(x=X1, y=X2, fill=value )) +
   geom_tile() + geom_text(aes(label = value), color = 'white')
 ggsave('Correlation_heatmap.png', width = 5, height = 5)
 ```
-
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;This correlation heat map reveals that Generosity and Perception of Corruption are deeply uncorrelated to any of the other variables. </p>
 </div>
 ```{r, echo=FALSE, results='hide'}
 vif(model)
@@ -102,7 +113,16 @@ vif(model)
 vif_values <- vif(model)
 barplot(vif_values, main = "VIF Values", horiz = TRUE, col = "steelblue")
 ```
+```{r}
+vif(model2)
+```
+```{r, echo=FALSE}
+vif_values <- vif(model2)
+barplot(vif_values, main = "VIF Values", horiz = TRUE, col = "steelblue")
+```
+```
 
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;After running a multicollinearity check on the different independent variables, it is important to note that they do not appear to be strongly correlated at all as none of the variance inflation factors are even greater than 4.</p>
 </div>
 <center><h2> Conclusion </h2></center>
 <br>
