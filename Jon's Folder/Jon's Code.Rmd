@@ -21,21 +21,26 @@ library(car)
 ```{r, echo=FALSE}
 data <- read.csv("Resources/World Happiness Report 2022.csv")
 data
-```
-<p>Above:The table displaying the data in the World Happiness report.</p>
-------------------------------------------------------
-<br>
 
-```{r, echo=FALSE}
 hs = data$Happiness.score
-dys_r = data$Dystopia..1.83....residual
 gdp = data$Explained.by..GDP.per.capita
 soc = data$Explained.by..Social.support
 hle = data$Explained.by..Healthy.life.expectancy
 free = data$Explained.by..Freedom.to.make.life.choices
 gene = data$Explained.by..Generosity
 poc = data$Explained.by..Perceptions.of.corruption
-df <- data.frame(hs, dys_r, soc, gdp, hle, free, gene, poc)
+
+Wh = data$Whisker.high
+wl = data$Whisker.low
+dys = data$Dystopia..1.83....residual
+rank = data$RANK
+```
+<p>Above:The table displaying the data in the World Happiness report.</p>
+------------------------------------------------------
+<br>
+
+```{r, echo=FALSE}
+df <- data.frame(hs, soc, gdp, hle, free, gene, poc)
 ```
 
 ```{r, echo=FALSE, results='hide'}
@@ -58,40 +63,48 @@ plot(hs, gene, pch = 19, col = "black")
 plot(hs, poc, pch = 19, col = "black")
 ```
 </div>
-```{r, echo=FALSE, results='hide'}
-plot(hs, dys_r, pch = 19, col = "black")
-```
+
+<center><h2> Creating the Linear Model </h2></center>
+<br>
 
 ```{r, echo=FALSE}
-model <- lm(hs ~ dys_r + gdp + hle + free + gene+poc)
+model <- lm(hs ~ gdp + soc + hle + free + gene + poc)
 summary(model)
 ```
+<br>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;From the Estimate Std column we can derive the formula:</p>
 
+<center><p style="font-size:25px"><b>hs = 1.67 + (0.55)X<sub>1</sub> + (1.41)X<sub>2</sub> + (1.27)X<sub>3</sub> + (1.60)<sub>4</sub> + (0.97)<sub>5</sub> + (0.73)X<sub>6</sub></b></p></center>
+<br>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The R squared value for this model is .7737 which tell us that 77% of the variation in the data is explained by the model. The overall F-statistic for the data is 79.2. The p-value is 2.2e-16, which is strong evidence to reject the null hypothesis that all the coefficients for each variable equal zero. All of this shows that the regression model is significant.</p>
+
+------------------------------------------------------
+<br>
+<center><h2> Checking for Multicollinearity in the Data</h2></center>
 ```{r, echo=FALSE, results='hide'}
 cormat <- round(cor(df),2)
 melted_format <- melt(cormat)
 ```
-
+<div align="center">
 ```{r, echo=FALSE}
 ggplot(data = melted_format, aes(x=X1, y=X2, fill=value )) + 
   geom_tile() + geom_text(aes(label = value), color = 'white')
 ggsave('Correlation_heatmap.png', width = 5, height = 5)
 ```
 
-
-```{r, echo=FALSE}
-model <- lm(hs ~ gdp + hle + free + gene+poc)
-summary(model)
-```
-
+</div>
 ```{r, echo=FALSE, results='hide'}
 vif(model)
 ```
-
+<div align="center">
 ```{r, echo=FALSE}
 vif_values <- vif(model)
 barplot(vif_values, main = "VIF Values", horiz = TRUE, col = "steelblue")
 ```
 
-
+</div>
+<center><h2> Conclusion </h2></center>
+<br>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
 
