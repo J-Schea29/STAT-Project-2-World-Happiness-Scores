@@ -1,65 +1,110 @@
 ---
-title: "Stat Project 2"
 output: html_notebook
 ---
 
-This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+<br>
+<b><center><h1> Statistics Project II </h1></center></b>
+<center><h3>by Sam Sharp, Alvin Ugochukwu, and Jon Scheaffer</h3></center>
+<br>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;World Happiness Score is obtained by statistically calculating many different variables which describe aspects of society in a given country. These variables are GDP, social support, health/life expectancy, freedom, generosity, and perceptions of corruption. The dataset used is from Kaggle (https://www.kaggle.com/datasets/ajaypalsinghlo/world-happiness-report-2022) and uses data from the World Gallup Poll. Importantly, none of the predictor variables appear to be colinear, which strengthens the argument for the use of multiple linear regression. The dataset consists of entries for 146 countries, using 6 predictors that each linearly correlate with the World Happiness Score.</p>
+<br>
 
-Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Ctrl+Shift+Enter*. 
-```{r}
-install.packages("MASS") 
-install.packages("reshape2") 
-install.packages("reshape")
-```
-```{r}
+
+```{r, echo=FALSE, results='hide'}
 library(MASS) 
 library(reshape2) 
 library(reshape)
+library(plotly)
+library(car)
 ```
 
-```{r}
+```{r, echo=FALSE}
 data <- read.csv("Resources/World Happiness Report 2022.csv")
 data
+
+hs = data$Happiness.score
+gdp = data$Explained.by..GDP.per.capita
+soc = data$Explained.by..Social.support
+hle = data$Explained.by..Healthy.life.expectancy
+free = data$Explained.by..Freedom.to.make.life.choices
+gene = data$Explained.by..Generosity
+poc = data$Explained.by..Perceptions.of.corruption
+
+Wh = data$Whisker.high
+wl = data$Whisker.low
+dys = data$Dystopia..1.83....residual
+rank = data$RANK
 ```
-```{r}
-df <- subset(data, select = -c(RANK, Country))
+<p>Above:The table displaying the data in the World Happiness report.</p>
+------------------------------------------------------
+<br>
+
+```{r, echo=FALSE}
+df <- data.frame(hs, soc, gdp, hle, free, gene, poc)
 ```
 
-```{r}
+```{r, echo=FALSE, results='hide'}
 summary(df)
 ```
-```{r}
+
+```{r, echo=FALSE, results='hide'}
 str(df)
 ```
-```{r}
-cormat <- round(cor(df[ , c('Happiness.score', 'Whisker.high', 'Whisker.low', 'Dystopia..1.83....residual', 'Explained.by..GDP.per.capita', 'Explained.by..Social.support', 'Explained.by..Healthy.life.expectancy', 'Explained.by..Freedom.to.make.life.choices', 'Explained.by..Generosity', 'Explained.by..Perceptions.of.corruption')]),2)
-melted_format <- melt(cormat)
-head(melted_format)
+<center><h2> Scatter Plots between the Different Variables </h2></center>
+<br>
+<div align="center">
+```{r, echo=FALSE, fig.align = 'center'}
+par(mfrow = c(1,3))
+plot(hs, soc, pch = 19, col = "black")
+plot(hs, gdp, pch = 19, col = "black")
+plot(hs, hle, pch = 19, col = "black")
+plot(hs, free, pch = 19, col = "black")
+plot(hs, gene, pch = 19, col = "black")
+plot(hs, poc, pch = 19, col = "black")
 ```
-```{r}
+</div>
+
+<center><h2> Creating the Linear Model </h2></center>
+<br>
+
+```{r, echo=FALSE}
+model <- lm(hs ~ gdp + soc + hle + free + gene + poc)
+summary(model)
+```
+<br>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;From the Estimate Std column we can derive the formula:</p>
+
+<center><p style="font-size:25px"><b>hs = 1.67 + (0.55)X<sub>1</sub> + (1.41)X<sub>2</sub> + (1.27)X<sub>3</sub> + (1.60)<sub>4</sub> + (0.97)<sub>5</sub> + (0.73)X<sub>6</sub></b></p></center>
+<br>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The R squared value for this model is .7737 which tell us that 77% of the variation in the data is explained by the model. The overall F-statistic for the data is 79.2. The p-value is 2.2e-16, which is strong evidence to reject the null hypothesis that all the coefficients for each variable equal zero. All of this shows that the regression model is significant.</p>
+
+------------------------------------------------------
+<br>
+<center><h2> Checking for Multicollinearity in the Data</h2></center>
+```{r, echo=FALSE, results='hide'}
+cormat <- round(cor(df),2)
+melted_format <- melt(cormat)
+```
+<div align="center">
+```{r, echo=FALSE}
 ggplot(data = melted_format, aes(x=X1, y=X2, fill=value )) + 
   geom_tile() + geom_text(aes(label = value), color = 'white')
 ggsave('Correlation_heatmap.png', width = 5, height = 5)
 ```
-```{r}
-install.packages("plotly")
-```
-```{r}
-library(plotly)
 
+</div>
+```{r, echo=FALSE, results='hide'}
+vif(model)
 ```
-
-```{r}
-model <- lm(mpg ~ disp + hp + wt + drat, data = mtcars)
-summary(model)
+<div align="center">
+```{r, echo=FALSE}
+vif_values <- vif(model)
+barplot(vif_values, main = "VIF Values", horiz = TRUE, col = "steelblue")
 ```
 
-```{r}
-summary(data)
-```
+</div>
+<center><h2> Conclusion </h2></center>
+<br>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
 
-Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Ctrl+Alt+I*.
-
-When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Ctrl+Shift+K* to preview the HTML file).
-
-The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.
