@@ -9,9 +9,9 @@ output: html_notebook
 <br>
 <p style="line-height:2; font-size:20px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Thomas Jefferson once said that "the care of human life and happiness, and not their destruction, is the first and only object of good government." But how does one quantify the a happiness of a people? Furthermore, what factors in society result in this happiness? Some might say that freedom and a principled government are required for citizens to be happy. Others might suggest that it is the material well being of the people that makes them happy. Through the analysis of data of this kind we will be better able to determine which goverment might meet Jefferson's standards for being good.</p>
 <br>
-<p style="line-height:2; font-size:20px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;World Happiness Score attempts to do just this by statistically calculating many different variables which describe aspects of society in a given country. These variables are GDP, social support, health/life expectancy, freedom, generosity, and perceptions of corruption. The dataset used is from Kaggle (https://www.kaggle.com/datasets/ajaypalsinghlo/world-happiness-report-2022) and uses data from the World Gallup Poll. The dataset consists of entries for 146 countries, using 6 predictors that each linearly correlate with the World Happiness Score.</p>
+<p style="line-height:2; font-size:20px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The World Happiness Score attempts to do just this by statistically calculating many different variables which describe aspects of society in a given country. These variables are GDP, social support, health/life expectancy, freedom, generosity, perceptions of corruption, and the Happiness Score. The dataset used is from Kaggle (https://www.kaggle.com/datasets/ajaypalsinghlo/world-happiness-report-2022) and uses data from the World Gallup Poll. The dataset consists of entries for 146 countries, using 6 predictors that each linearly correlate with the Happiness Score.</p>
 <br>
-<p style="line-height:2; font-size:20px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The goal of this project is to use the data from the World Happiness Score to create a Linear Regression Model capable of predicting the happiness of a given country. Along the way the variables will be tested to determine their relevance to the linear regression in the data.</p>
+<p style="line-height:2; font-size:20px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The goal of this project is to use the data from the World Happiness Score to create a Linear Regression Model capable of predicting the happiness of a given country. Along the way the variables will be tested to determine their relevance to the model.</p>
 <br>
 
 
@@ -62,7 +62,7 @@ summary(df)
 ```{r, echo=FALSE, results='hide'}
 str(df)
 ```
-<center><h2> Scatter Plots Comparing the Independent Variables to the Dependent Variable (hs) </h2></center>
+<center><b><h2> Scatter Plots Comparing the Independent Variables to the Dependent Variable (hs)</h2></b></center>
 <br>
 <div align="center">
 ```{r, echo=FALSE, fig.align = 'center'}
@@ -79,7 +79,7 @@ plot(hs, poc, pch = 19, col = "black")
 <br>
 <center>_____________________________________________________________________________________________________________________</center>
 <br>
-<center><h2> Creating the Linear Model </h2></center>
+<center><b><h2> Creating the Linear Model </h2></b></center>
 <br>
 
 ```{r, echo=FALSE}
@@ -106,7 +106,7 @@ summary(model2)
 <br>
 <center>_____________________________________________________________________________________________________________________</center>
 <br>
-<center><h2> Checking for Multicollinearity in the Data</h2></center>
+<center><b><h2> Checking for Multicollinearity in the Data</h2></b></center>
 <br>
 ```{r, echo=FALSE, results='hide'}
 cormat <- round(cor(df),2)
@@ -118,27 +118,26 @@ ggplot(data = melted_format, aes(x=X1, y=X2, fill=value )) +
   geom_tile() + geom_text(aes(label = value), color = 'white')
 ggsave('Correlation_heatmap.png', width = 5, height = 5)
 ```
-<p style="line-height:2; font-size:20px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;This correlation heat map reveals that Generosity and Perception of Corruption are deeply uncorrelated to any of the other variables.</p>
 </div>
-
-
+<p style="line-height:2; font-size:20px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;This correlation heat map reveals that Generosity and Perception of Corruption are deeply uncorrelated to any of the other variables. This should be expected from what we saw in the scatter plots and the model summary above. Something to note in the chart is that freedom does not have a strong correlation to the other independent variables. However, wealthy totalitarian nations such as China, Russia, and Saudi Arabia show that freedom is not needed for a country to be wealthy. Freedom, with a correlation of .62, is correlated with the Happiness Score though it remains the lowest correlation of the un-dropped variables. On the other hand, GDP seems to have the strongest correlation with the other variable. This is not surprising since a wealthier country can afford better hospitals and social programs</p>
 
 ```{r, echo=FALSE, results='hide'}
 vif(model2)
 ```
+<br>
 <div align="center">
 ```{r, echo=FALSE}
 vif_values <- vif(model2)
 barplot(vif_values, main = "VIF Values", horiz = TRUE, col = "steelblue")
 ```
-<br>
-<p style="line-height:2; font-size:20px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;After running a multicollinearity check on the different independent variables, it is important to note that they do not appear to be strongly correlated at all as none of the variance inflation factors are even greater than 4.</p>
 </div>
+<br>
+<p style="line-height:2; font-size:20px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;After running a multicollinearity check on the different independent variables, it is important to note that they do not appear to be strongly correlated at all as none of the variance inflation factors are even greater than 4. GDP has the highest score which is just exemplifying its high correlations with the other independent variables shown in the correlation heatmap above.</p>
 <br>
 <center>_____________________________________________________________________________________________________________________</center>
 <br>
-<center><h2> Conclusion </h2></center>
+<center><b><h2> Conclusion </h2></b></center>
 <br>
-<p style="line-height:2; font-size:20px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;As demonstrated, according to the data obtained from the World Gallup Poll, a country's Happiness Score is determined by many factors, to different degrees. The main factors from the categories the poll recorded that affect the Happiness Score are GDP per capita, Perceptions of Social support, Healthy life expectancy, and Freedom to make life choices. Each of these variables have a significant effect on the overall output of the Happiness Score, so it is important to use all of them and implement a multiple linear regression analysis, rather than only including one of these significant factors. Finally, since the Variance Inflation Factor (VIF) of each included independent variable is low and acceptable, none of the variables are strongly correlated with each other, making an even stronger argument in support of Multiple Linear Regression./</p>
+<p style="line-height:2; font-size:20px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;As demonstrated by the data obtained from the World Gallup Poll, a country's Happiness Score is determined by many factors, to different degrees. The main factors from the categories the poll recorded that affect the Happiness Score are GDP per capita, Perceptions of Social support, Healthy life expectancy, and Freedom to make life choices. Each of these variables have a significant effect on the overall output of the Happiness Score, so it is important to use all of them and implement a multiple linear regression analysis, rather than only including one of these significant factors. Finally, since the Variance Inflation Factor (VIF) of each included independent variable is low and acceptable, none of the variables are strongly correlated with each other, making an even stronger argument in support of Multiple Linear Regression.</p>
 <br>
 
