@@ -1,0 +1,144 @@
+---
+output: html_notebook
+---
+
+<br>
+<b><center><h1> Statistics Project II </h1></center></b>
+<center><h3>by Sam Sharp, Alvin Ugochukwu, and Jon Scheaffer</h3></center>
+<br>
+<br>
+<p style="line-height:2; font-size:20px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Thomas Jefferson once said that "the care of human life and happiness, and not their destruction, is the first and only object of good government." But how does one quantify the a happiness of a people? Furthermore, what factors in society result in this happiness? Some might say that freedom and a principled government are required for citizens to be happy. Others might suggest that it is the material well being of the people that makes them happy. Through the analysis of data of this kind we will be better able to determine which goverment might meet Jefferson's standards for being good.</p>
+<br>
+<p style="line-height:2; font-size:20px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;World Happiness Score attempts to do just this by statistically calculating many different variables which describe aspects of society in a given country. These variables are GDP, social support, health/life expectancy, freedom, generosity, and perceptions of corruption. The dataset used is from Kaggle (https://www.kaggle.com/datasets/ajaypalsinghlo/world-happiness-report-2022) and uses data from the World Gallup Poll. The dataset consists of entries for 146 countries, using 6 predictors that each linearly correlate with the World Happiness Score.</p>
+<br>
+<p style="line-height:2; font-size:20px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The goal of this project is to use the data from the World Happiness Score to create a Linear Regression Model capable of predicting the happiness of a given country. Along the way the variables will be tested to determine their usefulness in the equation.</p>
+<br>
+
+
+```{r, echo=FALSE, results='hide'}
+library(MASS) 
+library(reshape2) 
+library(reshape)
+library(plotly)
+library(car)
+```
+
+```{r, echo=FALSE}
+data <- read.csv("Resources/World Happiness Report 2022.csv")
+data
+
+hs = data$Happiness.score
+gdp = data$Explained.by..GDP.per.capita
+soc = data$Explained.by..Social.support
+hle = data$Explained.by..Healthy.life.expectancy
+free = data$Explained.by..Freedom.to.make.life.choices
+gene = data$Explained.by..Generosity
+poc = data$Explained.by..Perceptions.of.corruption
+
+Wh = data$Whisker.high
+wl = data$Whisker.low
+dys = data$Dystopia..1.83....residual
+rank = data$RANK
+```
+<p>Above:The table displaying the data in the World Happiness report.</p>
+------------------------------------------------------
+<br>
+
+```{r, echo=FALSE}
+df <- data.frame(hs, soc, gdp, hle, free, gene, poc)
+Variable <- c("hs", "soc", "gdp", "hle", "free", "gene", "poc")
+Description <- c("Happiness score, the predicted result from independent variables", "The level of social programs and support available", "The GDP of the country in question", "The healthy life expectancy of a person in the country", "The ability of a person in the country to do what they wish", "The level of generosity someone experiences in the country", "The level of perceived corruption within institutions of power")
+table <- data.frame(Variable, Description)
+table
+```
+<p>Above:A table displaying the varaibles and there meanings.</p>
+------------------------------------------------------
+<br>
+
+```{r, echo=FALSE, results='hide'}
+summary(df)
+```
+
+```{r, echo=FALSE, results='hide'}
+str(df)
+```
+<center><h2> Scatter Plots between the Different Variables </h2></center>
+<br>
+<div align="center">
+```{r, echo=FALSE, fig.align = 'center'}
+par(mfrow = c(1,3))
+plot(hs, soc, pch = 19, col = "black")
+plot(hs, gdp, pch = 19, col = "black")
+plot(hs, hle, pch = 19, col = "black")
+plot(hs, free, pch = 19, col = "black")
+plot(hs, gene, pch = 19, col = "black")
+plot(hs, poc, pch = 19, col = "black")
+```
+</div>
+<p style="line-height:2; font-size:20px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The scatter plots reveal that for all variables except generosity and perception of corruption there is a strong positive correlation to the happiness score. This is surprising given one's first assumption might be that people who are generous might be happier and that a perception of corruption might make that people less happy. Perhaps generosity just doesn't require the giver to be happy to be generous. Further, a perception of corruption doesn't necessarily mean there is corruption only that the government is perceived as corrupt.</p>
+<br>
+<center>_____________________________________________________________________________________________________________________</center>
+<br>
+<center><h2> Creating the Linear Model </h2></center>
+<br>
+
+```{r, echo=FALSE}
+model <- lm(hs ~ gdp + soc + hle + free + gene + poc)
+summary(model)
+```
+<br>
+<p style="line-height:2; font-size:20px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;From the Estimate Std column we can derive the formula:</p>
+<br>
+<center><p style="line-height:2; font-size:25px"><b>hs = 1.67 + (0.55)X<sub>1</sub> + (1.41)X<sub>2</sub> + (1.27)X<sub>3</sub> + (1.60)X<sub>4</sub> + (0.97)X<sub>5</sub> + (0.73)X<sub>6</sub></b></p></center>
+<br>
+<p style="line-height:2; font-size:20px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;As the summary of the variables states, the p-value of the data is very low (2.2e-16). However for the variables gene and poc, their p-values are greater than the significance level (α) = 0.05. This is likely do to there lack of correlation with the happienes score shown above in the scatter plots. Thus these variables are not significant and can be omitted. Which gives us the summary below:</p>
+<br>
+```{r, echo=FALSE}
+model2 <- lm(hs ~ gdp + soc + hle + free)
+summary(model2)
+```
+<br>
+<p style="line-height:2; font-size:20px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Thus, we are provided with the new formula:</p>
+<br>
+<center><p style="font-size:25px"><b>hs = 1.74 + (0.53)X<sub>1</sub> + (1.38)X<sub>2</sub> + (1.37)X<sub>3</sub> + (1.97)X<sub>4</sub></b></p></center>
+<br>
+<p style="line-height:2; font-size:20px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;While the multiple R² and adjusted R²  with the original variables was high at 0.774 and 0.764, these values with the significant variables are still high at 0.762 and 0.755. This tell us that around 76% of the variation in the data is explained by the model. The overall F-statistic for the data is 112.9. The p-value is 2.2e-16, which is strong evidence to reject the null hypothesis that all the coefficients for each variable equal zero. All of this shows that the regression model is significant.</p>
+<br>
+<center>_____________________________________________________________________________________________________________________</center>
+<br>
+<center><h2> Checking for Multicollinearity in the Data</h2></center>
+<br>
+```{r, echo=FALSE, results='hide'}
+cormat <- round(cor(df),2)
+melted_format <- melt(cormat)
+```
+<div align="center">
+```{r, echo=FALSE}
+ggplot(data = melted_format, aes(x=X1, y=X2, fill=value )) + 
+  geom_tile() + geom_text(aes(label = value), color = 'white')
+ggsave('Correlation_heatmap.png', width = 5, height = 5)
+```
+<p style="line-height:2; font-size:20px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;This correlation heat map reveals that Generosity and Perception of Corruption are deeply uncorrelated to any of the other variables.</p>
+</div>
+
+
+
+```{r, echo=FALSE, results='hide'}
+vif(model2)
+```
+<div align="center">
+```{r, echo=FALSE}
+vif_values <- vif(model2)
+barplot(vif_values, main = "VIF Values", horiz = TRUE, col = "steelblue")
+```
+<br>
+<p style="line-height:2; font-size:20px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;After running a multicollinearity check on the different independent variables, it is important to note that they do not appear to be strongly correlated at all as none of the variance inflation factors are even greater than 4.</p>
+</div>
+<br>
+<center>_____________________________________________________________________________________________________________________</center>
+<br>
+<center><h2> Conclusion </h2></center>
+<br>
+<p style="line-height:2; font-size:20px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;WRITE HERE!!</p>
+<br>
+
